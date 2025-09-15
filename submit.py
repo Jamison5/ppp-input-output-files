@@ -25,6 +25,7 @@ REFRESH_CREDENTIALS = False
 # No changes to the code below                                                #
 #                                                                             #
 # --------------------------------------------------------------------------- #
-if __name__ == '__main__':
+if __name__ == "__main__":
     from submitter_utils import submit
+
     submit(TASK_NUMBER, REFRESH_CREDENTIALS)
