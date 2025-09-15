@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 # TODO: Place your code here.
 def filter_phone_calls(
     area_code: int, start_hour: int, end_hour: int, input_path: str, output_path: str
@@ -26,19 +29,23 @@ def filter_phone_calls(
 
         area_code_filtered_list = []
 
+        filtered_hours = range(start_hour, end_hour + 1)
+
         for line in lines:
 
             date_time, phone_number = line.split(": ")
 
-            if int(phone_number[3:6]) == area_code:
+            dtg = datetime.strptime(date_time, "%Y-%m-%d %H:%M:%S")
+
+            if int(phone_number[3:6]) == area_code and dtg.hour in filtered_hours:
 
                 filtered_line = date_time + ": " + phone_number
 
                 area_code_filtered_list.append(filtered_line)
 
-        for line in area_code_filtered_list[
-            0:6
-        ]:  # TODO remove indexing after testing is complete
+        for (
+            line
+        ) in area_code_filtered_list:  # TODO remove indexing after testing is complete
 
             print(line)
 
@@ -46,9 +53,9 @@ def filter_phone_calls(
 if __name__ == "__main__":
 
     filter_phone_calls(
-        area_code=601,  # not used at this point
-        start_hour=-1,  # not used at this point
-        end_hour=-1,  #  not used at this point
+        area_code=412,
+        start_hour=0,
+        end_hour=6,
         input_path="data/phone_calls.txt",
         output_path=None,  # not at this point
     )
