@@ -23,7 +23,7 @@ def filter_phone_calls(
 
     file_path = input_path
 
-    with open(file_path, "r") as file:
+    with open(file_path, "r") as file, open(output_path, "w") as output:
 
         lines = file.readlines()
 
@@ -47,7 +47,7 @@ def filter_phone_calls(
             line
         ) in area_code_filtered_list:  # TODO remove indexing after testing is complete
 
-            print(line)
+            output.write(line)
 
 
 if __name__ == "__main__":
@@ -57,5 +57,5 @@ if __name__ == "__main__":
         start_hour=0,
         end_hour=6,
         input_path="data/phone_calls.txt",
-        output_path=None,  # not at this point
+        output_path="data/phone_calls_filtered.txt",
     )
