@@ -29,7 +29,7 @@ def filter_phone_calls(
 
         area_code_filtered_list = []
 
-        filtered_hours = range(start_hour, end_hour + 1)
+        filtered_hours = range(start_hour, end_hour)
 
         for line in lines:
 
