@@ -36,7 +36,9 @@ def filter_phone_calls(
 
                 area_code_filtered_list.append(filtered_line)
 
-        for line in area_code_filtered_list:
+        for line in area_code_filtered_list[
+            0:6
+        ]:  # TODO remove indexing after testing is complete
 
             print(line)
 
