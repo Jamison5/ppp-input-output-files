@@ -27,3 +27,7 @@ def create_dev_set(full_data_dir, dev_data_dir, ratio=10):
 
 
 # TODO 5: Place your code here.
+
+if __name__ == "__main__":
+
+    pass
