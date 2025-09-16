@@ -79,33 +79,42 @@ def export_redials_report(phone_call_dict: dict, report_dir: str):
         phone_call_dict: A directory created by load_phone_calls_dict()
         report_dir: A str which contains the path of the dir you want the reports to be generated in
     """
-    output_list = []
+    os.makedirs(report_dir, exist_ok=True)
     THERSH_HOLD = 600  # 10 minutes in seconds
 
     for area_code, phone in phone_call_dict.items():
-        timestamps = phone_call_dict[area_code][phone]
 
-        for i in range(0, len(timestamps) - 1):
-            timestamp_string = datetime.strftime(timestamps[i], "%Y-%m-%d %H:%M:%S")
-            call_back_string = datetime.strftime(timestamps[i + 1], "%Y-%m-%d %H:%M:%S")
-            call_back_string = call_back_string.split(" ")[1]
-            previous_timestamp = timestamps[i]
-            current_timestamp = timestamps[i + 1]
-            time_diff_delta = current_timestamp - previous_timestamp
-            sec_diff = time_diff_delta.total_seconds()
+        output_list = []
 
-            if sec_diff < 600:
-                output_list.append(
-                    f"{phone}: {timestamp_string} -> ({call_back_string})"
+        for phone_number, timestamps in phone.items():
+            timestamps = timestamps
+
+            for i in range(0, len(timestamps) - 1):
+                timestamp_string = datetime.strftime(timestamps[i], "%Y-%m-%d %H:%M:%S")
+                call_back_string = datetime.strftime(
+                    timestamps[i + 1], "%Y-%m-%d %H:%M:%S"
                 )
+                call_back_string = call_back_string.split(" ")[1]
+                previous_timestamp = timestamps[i]
+                current_timestamp = timestamps[i + 1]
+                time_diff_delta = current_timestamp - previous_timestamp
+                sec_diff = time_diff_delta.total_seconds()
 
-    return output_list
+                if sec_diff > THERSH_HOLD:
+                    output_list.append(
+                        f"{phone_number}: {timestamp_string} -> ({call_back_string})\n"
+                    )
+
+        if output_list:
+            file_path = os.path.join(report_dir, f"{area_code}.txt")
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.writelines(output_list)
 
 
 if __name__ == "__main__":
 
     phone_call_dict = load_phone_calls_dict("toy-data")
-    radial_list = export_redials_report(phone_call_dict, "None")
+    export_redials_report(phone_call_dict, "toy-data-reports")
     # phone_call_counts = generate_phone_call_counts(phone_call_dict)
     # top_called = most_frequently_called(phone_call_counts, 10)
     # export_phone_call_counts(top_called, "dev-data/most_frequent.txt")
