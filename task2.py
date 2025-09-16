@@ -105,7 +105,7 @@ def export_redials_report(phone_call_dict: dict, report_dir: str):
 if __name__ == "__main__":
 
     phone_call_dict = load_phone_calls_dict("toy-data")
-    radial_list = export_redials_report(phone_call_dict)
+    radial_list = export_redials_report(phone_call_dict, "None")
     # phone_call_counts = generate_phone_call_counts(phone_call_dict)
     # top_called = most_frequently_called(phone_call_counts, 10)
     # export_phone_call_counts(top_called, "dev-data/most_frequent.txt")
