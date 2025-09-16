@@ -1,6 +1,6 @@
 import os
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def create_dev_set(full_data_dir, dev_data_dir, ratio=10):
@@ -37,9 +37,6 @@ def load_phone_calls_dict(data_dir: str) -> dict:
     return phone_call_dict
 
 
-phone_call_dict = load_phone_calls_dict("dev-data")
-
-
 # TODO 2: Place your code here.
 def generate_phone_call_counts(phone_call_dict: dict) -> dict:
 
@@ -50,9 +47,6 @@ def generate_phone_call_counts(phone_call_dict: dict) -> dict:
             phone_call_count_dict[phone_number] = len(timestamps)
 
     return phone_call_count_dict
-
-
-phone_call_counts = generate_phone_call_counts(phone_call_dict)
 
 
 # TODO 3: Place your code here.
@@ -77,32 +71,41 @@ def export_phone_call_counts(top_call_list: list, out_file_path: str) -> None:
 
 # TODO 5: Place your code here.
 
+
+def export_redials_report(phone_call_dict: dict, report_dir: str):
+    """
+    args:
+
+        phone_call_dict: A directory created by load_phone_calls_dict()
+        report_dir: A str which contains the path of the dir you want the reports to be generated in
+    """
+    output_list = []
+    THERSH_HOLD = 600  # 10 minutes in seconds
+
+    for area_code, phone in phone_call_dict.items():
+        timestamps = phone_call_dict[area_code][phone]
+
+        for i in range(0, len(timestamps) - 1):
+            timestamp_string = datetime.strftime(timestamps[i], "%Y-%m-%d %H:%M:%S")
+            call_back_string = datetime.strftime(timestamps[i + 1], "%Y-%m-%d %H:%M:%S")
+            call_back_string = call_back_string.split(" ")[1]
+            previous_timestamp = timestamps[i]
+            current_timestamp = timestamps[i + 1]
+            time_diff_delta = current_timestamp - previous_timestamp
+            sec_diff = time_diff_delta.total_seconds()
+
+            if sec_diff < 600:
+                output_list.append(
+                    f"{phone}: {timestamp_string} -> ({call_back_string})"
+                )
+
+    return output_list
+
+
 if __name__ == "__main__":
 
-    toy_data = {
-        "761": {
-            "+1(761)823-1060": [
-                datetime(2020, 1, 2, 0, 3, 5),
-                datetime(2020, 5, 15, 0, 0, 10),
-                datetime(2020, 8, 30, 0, 1, 36),
-                datetime(2020, 10, 1, 0, 6, 28),
-                datetime(2020, 12, 2, 0, 2, 55),
-            ]
-        },
-        "892": {
-            "+1(892)532-9243": [
-                datetime(2020, 1, 1, 0, 0, 9),
-                datetime(2020, 6, 5, 0, 1, 20),
-                datetime(2020, 8, 9, 0, 5, 10),
-                datetime(2020, 9, 15, 0, 3, 18),
-                datetime(2020, 12, 15, 0, 2, 45),
-            ]
-        },
-    }
-
-    phone_call_dict = load_phone_calls_dict("dev-data")
-    # phone_call_counts = generate_phone_call_counts(toy_data)
-    # print(most_frequently_called(phone_call_counts, 1))
-    phone_call_counts = generate_phone_call_counts(phone_call_dict)
-    top_called = most_frequently_called(phone_call_counts, 10)
-    export_phone_call_counts(top_called, "dev-data/most_frequent.txt")
+    phone_call_dict = load_phone_calls_dict("toy-data")
+    radial_list = export_redials_report(phone_call_dict)
+    # phone_call_counts = generate_phone_call_counts(phone_call_dict)
+    # top_called = most_frequently_called(phone_call_counts, 10)
+    # export_phone_call_counts(top_called, "dev-data/most_frequent.txt")
