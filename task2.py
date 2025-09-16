@@ -57,10 +57,22 @@ def load_phone_calls_dict(data_dir: str) -> dict:
                     date_time_object
                 )
 
-    print(phone_call_dict["235"]["+1(235)749-3993"])
+    return phone_call_dict
+
+
+phone_call_dict = load_phone_calls_dict("dev-data")
 
 
 # TODO 2: Place your code here.
+def generate_phone_call_counts(phone_call_dict: dict = phone_call_dict) -> dict:
+
+    phone_call_count_dict = {}
+
+    for phone in phone_call_dict:
+
+        phone_call_count_dict[phone] = len(phone_call_dict[phone])
+
+    return phone_call_count_dict
 
 
 # TODO 3: Place your code here.
@@ -73,4 +85,6 @@ def load_phone_calls_dict(data_dir: str) -> dict:
 
 if __name__ == "__main__":
 
-    load_phone_calls_dict("dev-data")
+    phone_call_dict = load_phone_calls_dict("dev-data")
+    print(len(phone_call_dict["235"]["+1(235)749-3993"]))
+    print(generate_phone_call_counts(phone_call_dict))
