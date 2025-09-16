@@ -16,7 +16,7 @@ def create_dev_set(full_data_dir, dev_data_dir, ratio=10):
 
 
 # TODO 1: Place your code here.
-def load_phone_calls_dict(data_dir: str) -> dict:
+def load_phone_calls_dict(data_dir):
 
     phone_call_dict = {}
 
@@ -38,7 +38,7 @@ def load_phone_calls_dict(data_dir: str) -> dict:
 
 
 # TODO 2: Place your code here.
-def generate_phone_call_counts(phone_call_dict: dict) -> dict:
+def generate_phone_call_counts(phone_call_dict):
 
     phone_call_count_dict = {}
 
@@ -50,7 +50,7 @@ def generate_phone_call_counts(phone_call_dict: dict) -> dict:
 
 
 # TODO 3: Place your code here.
-def most_frequently_called(phone_call_counts: dict, top_n: int) -> list:
+def most_frequently_called(phone_call_counts, top_n):
     calls_list = []
 
     for phone_number, number_calls in phone_call_counts.items():
@@ -63,7 +63,7 @@ def most_frequently_called(phone_call_counts: dict, top_n: int) -> list:
 # TODO 4: Place your code here.
 
 
-def export_phone_call_counts(top_call_list: list, out_file_path: str) -> None:
+def export_phone_call_counts(top_call_list, out_file_path):
     with open(out_file_path, "w") as output:
         for phone_number, call_number in top_call_list:
             output.write(f"{phone_number}: {call_number}\n")
@@ -72,7 +72,7 @@ def export_phone_call_counts(top_call_list: list, out_file_path: str) -> None:
 # TODO 5: Place your code here.
 
 
-def export_redials_report(phone_call_dict: dict, report_dir: str) -> None:
+def export_redials_report(phone_call_dict, report_dir):
     """
     Create one plain-text report per area code.
 
