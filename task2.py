@@ -1,5 +1,6 @@
 import os
 import random
+from datetime import datetime
 
 
 def create_dev_set(full_data_dir, dev_data_dir, ratio=10):
@@ -15,6 +16,48 @@ def create_dev_set(full_data_dir, dev_data_dir, ratio=10):
 
 
 # TODO 1: Place your code here.
+def load_phone_calls_dict(data_dir: str) -> dict:
+    """
+
+
+    Assign a phone_calls_dict variable with an empty dict.
+
+    Implement a for loop that iterates over the phone_calls_*.txt files. HINT: The os.listdir function may be helpful here.
+
+    For each file, open it (preferably using the with statement) and read it line by line.
+
+    Extract the timestamp and the phone_number from each line into separate variables. HINT: Use the split method to separate a line into the two constituents.
+
+    From the phone_number extract the area_code. HINT: Use slicing on the str which can be understood as a list of characters. You want to extract the three digits enclosed in the parentheses.
+
+    Cast the timestamp into the datetime object. This will enable you to easily determine if the call happened after a certain hour in a day. HINT: You have done this in the preceding module.
+
+    Check if the phone call happened between midnight (included) and 6 am (not included).
+
+    If the phone call happened between midnight and 6 am append the timestamp to the appropriate place in the phone_calls_dict. First, you should use conditional statements to check if the necessary keys are already present in the phone_calls_dict. Finally, you would (presumably) append the timestamp to the phone_calls_dict like this:
+
+     phone_calls_dict[area_code][phone_number].append(timestamp)
+
+
+    """
+
+    phone_call_dict = {}
+
+    for file_name in sorted(os.listdir(data_dir)):
+        with open(f"{data_dir}/{file_name}") as full_data:
+            for line in full_data:
+                time, phone_number = line.split(": ")
+                area_code = phone_number[3:6]
+                date_time_object = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
+                if area_code not in phone_call_dict:
+                    phone_call_dict[area_code] = {}
+                if phone_number.strip() not in phone_call_dict[area_code]:
+                    phone_call_dict[area_code][phone_number.strip()] = []
+                phone_call_dict[area_code][phone_number.strip()].append(
+                    date_time_object
+                )
+
+    print(phone_call_dict["235"]["+1(235)749-3993"])
 
 
 # TODO 2: Place your code here.
@@ -30,4 +73,4 @@ def create_dev_set(full_data_dir, dev_data_dir, ratio=10):
 
 if __name__ == "__main__":
 
-    pass
+    load_phone_calls_dict("dev-data")
