@@ -72,43 +72,49 @@ def export_phone_call_counts(top_call_list: list, out_file_path: str) -> None:
 # TODO 5: Place your code here.
 
 
-def export_redials_report(phone_call_dict: dict, report_dir: str):
+def export_redials_report(phone_call_dict: dict, report_dir: str) -> None:
     """
-    args:
+    Create one plain-text report per area code.
 
-        phone_call_dict: A directory created by load_phone_calls_dict()
-        report_dir: A str which contains the path of the dir you want the reports to be generated in
+    Each <area_code>.txt file lists, in ascending order of phone number
+    and call time, all pairs of consecutive calls to the *same* number
+    that occur less than 10 minutes apart.
+
+    Format of each line:
+        +1(000)000-0000: YYYY-MM-DD HH:MM:SS -> HH:MM:SS (MM:SS)
     """
     os.makedirs(report_dir, exist_ok=True)
-    THERSH_HOLD = 600  # 10 minutes in seconds
+    THRESHOLD = 600  # 10 minutes, in seconds
 
-    for area_code, phone in phone_call_dict.items():
+    # Iterate by area code
+    for area_code, ac_data in phone_call_dict.items():
+        # Sort phone numbers lexicographically
+        output_lines = []
 
-        output_list = []
+        for phone_number in sorted(ac_data):
+            # Sort timestamps chronologically
+            times = sorted(ac_data[phone_number])
 
-        for phone_number, timestamps in phone.items():
-            timestamps = timestamps
+            # Compare consecutive timestamps
+            for i in range(len(times) - 1):
+                t1, t2 = times[i], times[i + 1]
+                diff_sec = (t2 - t1).total_seconds()
 
-            for i in range(0, len(timestamps) - 1):
-                timestamp_string = datetime.strftime(timestamps[i], "%Y-%m-%d %H:%M:%S")
-                call_back_string = datetime.strftime(
-                    timestamps[i + 1], "%Y-%m-%d %H:%M:%S"
-                )
-                call_back_string = call_back_string.split(" ")[1]
-                previous_timestamp = timestamps[i]
-                current_timestamp = timestamps[i + 1]
-                time_diff_delta = current_timestamp - previous_timestamp
-                sec_diff = time_diff_delta.total_seconds()
+                if diff_sec < THRESHOLD:
+                    # Format pieces
+                    start_str = t1.strftime("%Y-%m-%d %H:%M:%S")
+                    end_time = t2.strftime("%H:%M:%S")
+                    mins, secs = divmod(int(diff_sec), 60)
+                    dur_str = f"{mins:02d}:{secs:02d}"
 
-                if sec_diff > THERSH_HOLD:
-                    output_list.append(
-                        f"{phone_number}: {timestamp_string} -> ({call_back_string})\n"
+                    output_lines.append(
+                        f"{phone_number}: {start_str} -> {end_time} ({dur_str})\n"
                     )
 
-        if output_list:
-            file_path = os.path.join(report_dir, f"{area_code}.txt")
-            with open(file_path, "w", encoding="utf-8") as f:
-                f.writelines(output_list)
+        # Always create the file—even if empty
+        file_path = os.path.join(report_dir, f"{area_code}.txt")
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.writelines(output_lines)
 
 
 if __name__ == "__main__":
