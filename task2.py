@@ -68,9 +68,9 @@ def generate_phone_call_counts(phone_call_dict: dict = phone_call_dict) -> dict:
 
     phone_call_count_dict = {}
 
-    for phone in phone_call_dict:
-
-        phone_call_count_dict[phone] = len(phone_call_dict[phone])
+    for _, phones in phone_call_dict.items():
+        for phone_number, timestamps in phones.items():
+            phone_call_count_dict[phone_number] = len(timestamps)
 
     return phone_call_count_dict
 
@@ -85,6 +85,27 @@ def generate_phone_call_counts(phone_call_dict: dict = phone_call_dict) -> dict:
 
 if __name__ == "__main__":
 
+    toy_data = {
+        "761": {
+            "+1(761)823-1060": [
+                datetime(2020, 1, 2, 0, 3, 5),
+                datetime(2020, 5, 15, 0, 0, 10),
+                datetime(2020, 8, 30, 0, 1, 36),
+                datetime(2020, 10, 1, 0, 6, 28),
+                datetime(2020, 12, 2, 0, 2, 55),
+            ]
+        },
+        "892": {
+            "+1(892)532-9243": [
+                datetime(2020, 1, 1, 0, 0, 9),
+                datetime(2020, 6, 5, 0, 1, 20),
+                datetime(2020, 8, 9, 0, 5, 10),
+                datetime(2020, 9, 15, 0, 3, 18),
+                datetime(2020, 12, 15, 0, 2, 45),
+            ]
+        },
+    }
+
     phone_call_dict = load_phone_calls_dict("dev-data")
     print(len(phone_call_dict["235"]["+1(235)749-3993"]))
-    print(generate_phone_call_counts(phone_call_dict))
+    print(generate_phone_call_counts(toy_data))
