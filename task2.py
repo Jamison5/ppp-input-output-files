@@ -23,26 +23,28 @@ def load_phone_calls_dict(data_dir):
     for file_name in sorted(os.listdir(data_dir)):
         with open(f"{data_dir}/{file_name}") as full_data:
             for line in full_data:
-                time, phone_number = line.split(": ")
+                if not line:
+                    continue
+                time, phone_number = line.strip().split(": ")
                 area_code = phone_number[3:6]
                 date_time_object = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
-                if area_code not in phone_call_dict:
-                    phone_call_dict[area_code] = {}
-                if phone_number.strip() not in phone_call_dict[area_code]:
-                    phone_call_dict[area_code][phone_number.strip()] = []
-                phone_call_dict[area_code][phone_number.strip()].append(
-                    date_time_object
-                )
+
+                if 0 <= date_time_object.hour < 6:
+                    if area_code not in phone_call_dict:
+                        phone_call_dict[area_code] = {}
+                    if phone_number.strip() not in phone_call_dict[area_code]:
+                        phone_call_dict[area_code][phone_number.strip()] = []
+                    phone_call_dict[area_code][phone_number].append(date_time_object)
 
     return phone_call_dict
 
 
 # TODO 2: Place your code here.
-def generate_phone_call_counts(phone_call_dict):
+def generate_phone_call_counts(phone_calls_dict):
 
     phone_call_count_dict = {}
 
-    for _, phones in phone_call_dict.items():
+    for _, phones in phone_calls_dict.items():
         for phone_number, timestamps in phones.items():
             phone_call_count_dict[phone_number] = len(timestamps)
 
@@ -57,37 +59,29 @@ def most_frequently_called(phone_call_counts, top_n):
 
         calls_list.append((phone_number, number_calls))
 
-    return sorted(calls_list, key=lambda item: item[1], reverse=True)[:top_n]
+    sorted_list = sorted(calls_list, key=lambda x: (-x[1], x[0]))
+
+    return sorted_list[:top_n]
 
 
 # TODO 4: Place your code here.
 
 
-def export_phone_call_counts(top_call_list, out_file_path):
+def export_phone_call_counts(most_frequent_list, out_file_path):
     with open(out_file_path, "w") as output:
-        for phone_number, call_number in top_call_list:
+        for phone_number, call_number in most_frequent_list:
             output.write(f"{phone_number}: {call_number}\n")
 
 
 # TODO 5: Place your code here.
 
 
-def export_redials_report(phone_call_dict, report_dir):
-    """
-    Create one plain-text report per area code.
-
-    Each <area_code>.txt file lists, in ascending order of phone number
-    and call time, all pairs of consecutive calls to the *same* number
-    that occur less than 10 minutes apart.
-
-    Format of each line:
-        +1(000)000-0000: YYYY-MM-DD HH:MM:SS -> HH:MM:SS (MM:SS)
-    """
+def export_redials_report(phone_calls_dict, report_dir):
     os.makedirs(report_dir, exist_ok=True)
     THRESHOLD = 600  # 10 minutes, in seconds
 
     # Iterate by area code
-    for area_code, ac_data in phone_call_dict.items():
+    for area_code, ac_data in phone_calls_dict.items():
         # Sort phone numbers lexicographically
         output_lines = []
 
